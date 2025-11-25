@@ -5,4 +5,6 @@ async function retrieveBlock(notion, blockId) {
   return response;
 }
 
-module.exports = { retrieveBlock };
+export {
+  retrieveBlock,
+};
