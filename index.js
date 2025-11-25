@@ -2,9 +2,7 @@ import 'dotenv/config';
 import { Client } from '@notionhq/client';
 import { getUserPage } from './pages/index.js';
 import { searchInUser } from './search/query.js';
-// Initializing a client
 
-console.log('process.env.NOTION_TOKEN', process.env.NOTION_TOKEN);
 
 const notion = new Client({
   auth: process.env.NOTION_TOKEN,
@@ -26,3 +24,7 @@ console.log('firstPage', firstPage);
 const blockId = 'insert-a-block-id-here'; // get a block id with notion
 const block = await retrieveBlock(notion, blockId);
 console.log('block', block);
+
+
+// you can try the same for databases, just use database id instead of page id
+// in searchInUser function
