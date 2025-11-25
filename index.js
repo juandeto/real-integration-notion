@@ -14,7 +14,7 @@ export {
 
 // get all pages of the user
 const res = await searchInUser(notion, 'page')
-const firstPageId = res.results[0]?.id;
+const firstPageId = res.results?.[0]?.id;
 
 // Get the first page of the user
 const firstPage = await getUserPage(notion, firstPageId);
