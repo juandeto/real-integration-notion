@@ -63,3 +63,4 @@ app.listen(PORT, () => {
   console.log(`📝 Asegúrate de tener configurado NOTION_TOKEN en tu archivo .env`);
 });
 
+
