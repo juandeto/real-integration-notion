@@ -79,66 +79,13 @@ app.get('/', (req, res) => {
  *                 enum: [page, data_source]
  *                 description: Tipo de búsqueda - 'page' para páginas o 'data_source' para bases de datos
  *                 example: page
- *     responses:
- *       200:
- *         description: Búsqueda exitosa
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 results:
- *                   type: array
- *                   items:
- *                     type: object
- *                 hasMore:
- *                   type: boolean
- *                   description: Indica si hay más resultados disponibles
- *                 nextCursor:
- *                   type: string
- *                   nullable: true
- *                   description: Cursor para la siguiente página de resultados
- *       400:
- *         description: Error de validación
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: El valor debe ser "page" o "data_source"
- *       500:
- *         description: Error del servidor
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
  */
 app.post('/api/search', async (req, res) => {
   try {
     const { value } = req.body;
-
-    console.log('value', value);
-    const response = await searchInUser(notion, value);
-    
-    res.json({
-      success: true,
-      results: response.results || [],
-      hasMore: response.has_more || false,
-      nextCursor: response.next_cursor || null
-    });
   } catch (error) {
-    console.error('Error en la búsqueda:', error);
-    res.status(500).json({ 
-      error: error.message || 'Error al realizar la búsqueda' 
-    });
+    console.error('Error al buscar:', error);
+    res.status(500).json({ error: error.message || 'Error al buscar' });
   }
 });
 
@@ -156,39 +103,6 @@ app.post('/api/search', async (req, res) => {
  *           type: string
  *         description: ID de la página de Notion
  *         example: 59833787-2cf9-4fdf-8782-e53db20768a5
- *     responses:
- *       200:
- *         description: Página obtenida exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 data:
- *                   type: object
- *                   description: Datos completos de la página
- *       400:
- *         description: Error de validación
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Page ID es requerido
- *       500:
- *         description: Error del servidor
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
  */
 app.get('/api/pages/:id', async (req, res) => {
   try {
@@ -208,10 +122,7 @@ app.get('/api/pages/:id', async (req, res) => {
 
     const response = await getUserPage(notion, id);
     
-    res.json({
-      success: true,
-      data: response
-    });
+    res.json(response);
   } catch (error) {
     console.error('Error al obtener la página:', error);
     res.status(500).json({ 
@@ -234,39 +145,7 @@ app.get('/api/pages/:id', async (req, res) => {
  *           type: string
  *         description: ID del bloque de Notion
  *         example: insert-a-block-id-here
- *     responses:
- *       200:
- *         description: Bloque obtenido exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 data:
- *                   type: object
- *                   description: Datos completos del bloque
- *       400:
- *         description: Error de validación
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Block ID es requerido
- *       500:
- *         description: Error del servidor
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
+
  */
 app.get('/api/blocks/:id', async (req, res) => {
   try {
@@ -286,10 +165,7 @@ app.get('/api/blocks/:id', async (req, res) => {
 
     const response = await retrieveBlock(notion, id);
     
-    res.json({
-      success: true,
-      data: response
-    });
+    res.json(response);
   } catch (error) {
     console.error('Error al obtener el bloque:', error);
     res.status(500).json({ 
@@ -312,39 +188,6 @@ app.get('/api/blocks/:id', async (req, res) => {
  *           type: string
  *         description: ID de la base de datos de Notion
  *         example: database-id-here
- *     responses:
- *       200:
- *         description: Base de datos obtenida exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 data:
- *                   type: object
- *                   description: Datos completos de la base de datos
- *       400:
- *         description: Error de validación
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Database ID es requerido
- *       500:
- *         description: Error del servidor
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
  */
 app.get('/api/databases/:id', async (req, res) => {
   try {
@@ -364,10 +207,7 @@ app.get('/api/databases/:id', async (req, res) => {
 
     const response = await getDatabase(notion, id);
     
-    res.json({
-      success: true,
-      data: response
-    });
+    res.json(response);
   } catch (error) {
     console.error('Error al obtener la base de datos:', error);
     res.status(500).json({ 

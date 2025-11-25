@@ -14,7 +14,6 @@ async function searchInUser(notion, value){
         },
       });
 
-      console.log('search response', response);
 
       return response;
     } catch (error) {
