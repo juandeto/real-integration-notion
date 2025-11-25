@@ -1,0 +1,17 @@
+{
+  "name": "real-notion-integration",
+  "version": "1.0.0",
+  "description": "Integration of Notion Public API",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Juan de Tomaso",
+  "license": "ISC",
+  "dependencies": {
+    "@notionhq/client": "^5.4.0",
+    "dotenv": "^16.6.1"
+  }
+}
