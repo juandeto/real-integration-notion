@@ -3,6 +3,8 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { Client } from '@notionhq/client';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
 import { searchInUser } from './search/query.js';
 import { getUserPage } from './pages/index.js';
 import { retrieveBlock } from './blocks/index.js';
@@ -16,19 +18,109 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
-app.use(express.static(__dirname));
 
 // Initialize Notion client
 const notion = new Client({
   auth: process.env.NOTION_TOKEN,
 });
 
-// Serve index.html
+// Swagger configuration
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Notion API Integration',
+      version: '1.0.0',
+      description: 'API para interactuar con la API pública de Notion',
+      contact: {
+        name: 'Juan de Tomaso',
+      },
+    },
+    servers: [
+      {
+        url: `http://localhost:${PORT}`,
+        description: 'Servidor de desarrollo',
+      },
+    ],
+  },
+  apis: ['./server.js'], // Path to the API files
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
+// Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Notion API Documentation',
+}));
+
+// Redirect root to Swagger UI
 app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, 'index.html'));
+  res.redirect('/api-docs');
 });
 
-// API endpoint for search
+/**
+ * @swagger
+ * /api/search:
+ *   post:
+ *     summary: Busca páginas o bases de datos en el workspace de Notion
+ *     tags: [Search]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - value
+ *             properties:
+ *               value:
+ *                 type: string
+ *                 enum: [page, data_source]
+ *                 description: Tipo de búsqueda - 'page' para páginas o 'data_source' para bases de datos
+ *                 example: page
+ *     responses:
+ *       200:
+ *         description: Búsqueda exitosa
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 hasMore:
+ *                   type: boolean
+ *                   description: Indica si hay más resultados disponibles
+ *                 nextCursor:
+ *                   type: string
+ *                   nullable: true
+ *                   description: Cursor para la siguiente página de resultados
+ *       400:
+ *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: El valor debe ser "page" o "data_source"
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
 app.post('/api/search', async (req, res) => {
   try {
     const { value } = req.body;
@@ -50,7 +142,54 @@ app.post('/api/search', async (req, res) => {
   }
 });
 
-// API endpoint for getting a page by ID
+/**
+ * @swagger
+ * /api/pages/{id}:
+ *   get:
+ *     summary: Obtiene los detalles de una página específica por su ID
+ *     tags: [Pages]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la página de Notion
+ *         example: 59833787-2cf9-4fdf-8782-e53db20768a5
+ *     responses:
+ *       200:
+ *         description: Página obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   description: Datos completos de la página
+ *       400:
+ *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Page ID es requerido
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
 app.get('/api/pages/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -81,7 +220,54 @@ app.get('/api/pages/:id', async (req, res) => {
   }
 });
 
-// API endpoint for getting a block by ID
+/**
+ * @swagger
+ * /api/blocks/{id}:
+ *   get:
+ *     summary: Obtiene los detalles de un bloque específico por su ID
+ *     tags: [Blocks]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del bloque de Notion
+ *         example: insert-a-block-id-here
+ *     responses:
+ *       200:
+ *         description: Bloque obtenido exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   description: Datos completos del bloque
+ *       400:
+ *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Block ID es requerido
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
 app.get('/api/blocks/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -112,7 +298,54 @@ app.get('/api/blocks/:id', async (req, res) => {
   }
 });
 
-// API endpoint for getting a database by ID
+/**
+ * @swagger
+ * /api/databases/{id}:
+ *   get:
+ *     summary: Obtiene los detalles de una base de datos específica por su ID
+ *     tags: [Databases]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la base de datos de Notion
+ *         example: database-id-here
+ *     responses:
+ *       200:
+ *         description: Base de datos obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   description: Datos completos de la base de datos
+ *       400:
+ *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Database ID es requerido
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
 app.get('/api/databases/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -145,6 +378,7 @@ app.get('/api/databases/:id', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`📚 Documentación Swagger disponible en http://localhost:${PORT}/api-docs`);
   console.log(`📝 Asegúrate de tener configurado NOTION_TOKEN en tu archivo .env`);
 });
 
