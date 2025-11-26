@@ -1,23 +1,23 @@
-
-async function searchInUser(notion, value){
+async function searchInUser(notion, query = '', filter = 'page') {
     try {
-        
-    const response = await notion.search({
-        query: '',
-        filter: {
-          value: value,
-          property: 'object'
-        },
-        sort: {
-          direction: 'ascending',
-          timestamp: 'last_edited_time'
-        },
-      });
+        const searchOptions = {
+            query: query,
+            filter: {
+                value: filter,
+                property: 'object'
+            },
+            sort: {
+                direction: 'ascending',
+                timestamp: 'last_edited_time'
+            },
+        };
 
+        const response = await notion.search(searchOptions);
 
-      return response;
+        return response;
     } catch (error) {
-        console.error('error', error);
+        console.error('Error en la búsqueda:', error);
+        throw error;
     }
 }
 

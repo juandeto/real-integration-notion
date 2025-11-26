@@ -62,30 +62,76 @@ app.get('/', (req, res) => {
 /**
  * @swagger
  * /api/search:
- *   post:
+ *   get:
  *     summary: Busca páginas o bases de datos en el workspace de Notion
  *     tags: [Search]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - value
- *             properties:
- *               value:
- *                 type: string
- *                 enum: [page, data_source]
- *                 description: Tipo de búsqueda - 'page' para páginas o 'data_source' para bases de datos
- *                 example: page
+ *     parameters:
+ *       - in: query
+ *         name: query
+ *         schema:
+ *           type: string
+ *         description: Término de búsqueda (opcional). Filtra por el Title del objeto
+ *         example: mi página
+ *       - in: query
+ *         name: filter
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [page, data_source]
+ *         description: Tipo de búsqueda - 'page' para páginas o 'data_source' para data sources
+ *         example: page
+ *     responses:
+ *       200:
+ *         description: Búsqueda exitosa
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 has_more:
+ *                   type: boolean
+ *                 next_cursor:
+ *                   type: string
+ *                   nullable: true
+ *       400:
+ *         description: Error de validación
+ *       500:
+ *         description: Error del servidor
  */
-app.post('/api/search', async (req, res) => {
+app.get('/api/search', async (req, res) => {
   try {
-    const { value } = req.body;
+    const { query = '', filter } = req.query;
+
+    if (!filter) {
+      return res.status(400).json({ 
+        error: 'El parámetro "filter" es requerido. Debe ser "page" o "data_source"' 
+      });
+    }
+
+    if (filter !== 'page' && filter !== 'data_source') {
+      return res.status(400).json({ 
+        error: 'El parámetro "filter" debe ser "page" o "data_source"' 
+      });
+    }
+
+    if (!process.env.NOTION_TOKEN) {
+      return res.status(500).json({ 
+        error: 'NOTION_TOKEN no está configurado' 
+      });
+    }
+
+    const response = await searchInUser(notion, query, filter);
+    
+    res.json(response);
   } catch (error) {
     console.error('Error al buscar:', error);
-    res.status(500).json({ error: error.message || 'Error al buscar' });
+    res.status(500).json({ 
+      error: error.message || 'Error al realizar la búsqueda' 
+    });
   }
 });
 
@@ -94,7 +140,7 @@ app.post('/api/search', async (req, res) => {
  * /api/pages/{id}:
  *   get:
  *     summary: Obtiene los detalles de una página específica por su ID
- *     tags: [Pages]
+ *     tags: [Page]
  *     parameters:
  *       - in: path
  *         name: id
