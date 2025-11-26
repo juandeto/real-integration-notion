@@ -149,6 +149,33 @@ app.get('/api/search', async (req, res) => {
  *           type: string
  *         description: ID de la página de Notion
  *         example: 59833787-2cf9-4fdf-8782-e53db20768a5
+ *     responses:
+ *       200:
+ *         description: Página obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               description: Objeto de página de Notion con todas sus propiedades
+ *       400:
+ *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Page ID es requerido
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
  */
 app.get('/api/pages/:id', async (req, res) => {
   try {
@@ -167,6 +194,8 @@ app.get('/api/pages/:id', async (req, res) => {
     }
 
     const response = await getUserPage(notion, id);
+
+    console.log('response', response);
     
     res.json(response);
   } catch (error) {
@@ -191,7 +220,33 @@ app.get('/api/pages/:id', async (req, res) => {
  *           type: string
  *         description: ID del bloque de Notion
  *         example: insert-a-block-id-here
-
+ *     responses:
+ *       200:
+ *         description: Bloque obtenido exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               description: Objeto de bloque de Notion con todas sus propiedades
+ *       400:
+ *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Block ID es requerido
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
  */
 app.get('/api/blocks/:id', async (req, res) => {
   try {
@@ -234,6 +289,33 @@ app.get('/api/blocks/:id', async (req, res) => {
  *           type: string
  *         description: ID de la base de datos de Notion
  *         example: database-id-here
+ *     responses:
+ *       200:
+ *         description: Base de datos obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               description: Objeto de base de datos de Notion con todas sus propiedades
+ *       400:
+ *         description: Error de validación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Database ID es requerido
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
  */
 app.get('/api/databases/:id', async (req, res) => {
   try {
