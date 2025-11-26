@@ -9,7 +9,7 @@ pnpm install
 
 Follow the [Authentication Guide](https://developers.notion.com/docs/authorization) to create your NOTION_TOKEN
 
-Is very fast.
+It's very fast.
 
 Create an `.env` file and add the NOTION_TOKEN:
 ```
@@ -23,49 +23,49 @@ Start the application:
 pnpm run start
 ```
 
-El servidor se iniciará en `http://localhost:3000` (o el puerto especificado en la variable de entorno `PORT`).
+The server will start at `http://localhost:3000` (or the port specified in the `PORT` environment variable).
 
-## Documentación Swagger
+## Swagger Documentation
 
-Este proyecto utiliza **Swagger UI** como única interfaz para interactuar con la API. Una vez que el servidor esté corriendo, puedes acceder a la documentación interactiva en:
+This project uses **Swagger UI** as the only interface to interact with the API. Once the server is running, you can access the interactive documentation at:
 
 ```
 http://localhost:3000/api-docs
 ```
 
-O simplemente visita la ruta raíz que redirige automáticamente a Swagger:
+Or simply visit the root route which automatically redirects to Swagger:
 
 ```
 http://localhost:3000
 ```
 
-La documentación Swagger te permite:
-- Ver todos los endpoints disponibles
-- Probar cada endpoint directamente desde el navegador
-- Ver los esquemas de request y response
-- Entender los parámetros requeridos y opcionales
-- Ejecutar requests y ver respuestas en tiempo real
+Swagger documentation allows you to:
+- View all available endpoints
+- Test each endpoint directly from the browser
+- View request and response schemas
+- Understand required and optional parameters
+- Execute requests and see responses in real-time
 
-### Endpoints Disponibles
+### Available Endpoints
 
-1. **Search** - Buscar páginas o bases de datos en tu workspace
-   - Endpoint: `POST /api/search`
-   - Parámetros: `{ "value": "page" | "data_source" }`
+1. **Search** - Search for pages or databases in your workspace
+   - Endpoint: `GET /api/search`
+   - Parameters: `query` (optional) and `filter` (required: "page" or "data_source")
 
-2. **Get Page** - Obtener los detalles de una página por su ID
+2. **Get Page** - Get the details of a page by its ID
    - Endpoint: `GET /api/pages/:id`
 
-3. **Get Block** - Obtener los detalles de un bloque por su ID
+3. **Get Block** - Get the details of a block by its ID
    - Endpoint: `GET /api/blocks/:id`
 
-4. **Get Database** - Obtener los detalles de una base de datos por su ID
+4. **Get Database** - Get the details of a database by its ID
    - Endpoint: `GET /api/databases/:id`
 
 ## API Endpoints
 
-Todos los endpoints devuelven JSON con la siguiente estructura:
+All endpoints return JSON with the following structure:
 
-**Éxito:**
+**Success:**
 ```json
 {
   "success": true,
@@ -76,33 +76,33 @@ Todos los endpoints devuelven JSON con la siguiente estructura:
 **Error:**
 ```json
 {
-  "error": "Mensaje de error"
+  "error": "Error message"
 }
 ```
 
-## Tecnologías Utilizadas
+## Technologies Used
 
-- **Express.js** - Framework web para Node.js
-- **@notionhq/client** - Cliente oficial de la API de Notion
-- **Swagger UI** - Documentación interactiva de la API
-- **swagger-jsdoc** - Generación de documentación desde comentarios JSDoc
+- **Express.js** - Web framework for Node.js
+- **@notionhq/client** - Official Notion API client
+- **Swagger UI** - Interactive API documentation
+- **swagger-jsdoc** - Documentation generation from JSDoc comments
 
-## Estructura del Proyecto
+## Project Structure
 
 ```
 real-notion-integration/
-├── blocks/          # Funciones para obtener bloques
-├── database/        # Funciones para obtener bases de datos
-├── pages/           # Funciones para obtener páginas
-├── search/          # Funciones de búsqueda
-├── server.js        # Servidor Express con Swagger
-└── package.json     # Dependencias del proyecto
+├── blocks/          # Functions to retrieve blocks
+├── database/        # Functions to retrieve databases
+├── pages/           # Functions to retrieve pages
+├── search/          # Search functions
+├── server.js        # Express server with Swagger
+└── package.json     # Project dependencies
 ```
 
-## Notas
+## Notes
 
-- La documentación Swagger se genera automáticamente desde los comentarios JSDoc en `server.js`
-- Todos los endpoints requieren un `NOTION_TOKEN` válido configurado en el archivo `.env`
-- La API sigue el estándar OpenAPI 3.0
+- Swagger documentation is automatically generated from JSDoc comments in `server.js`
+- All endpoints require a valid `NOTION_TOKEN` configured in the `.env` file
+- The API follows the OpenAPI 3.0 standard
 
 
